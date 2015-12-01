@@ -1,0 +1,54 @@
+###global module,require,console###
+
+debug    = require("debug")("wine")
+mongoose = require "mongoose"
+
+module.exports =
+    Class           : (id,
+                       name,
+                       year,
+                       country,
+                       type,
+                       description) ->
+        this.id          = id
+        this.name        = name        or ""
+        this.year        = year
+        this.country     = country     or ""
+        this.type        = type        or ""
+        this.description = description or ""
+        this
+    model           :
+        id          : 0
+        name        : ""
+        year        : null
+        country     : ""
+        type        : ""
+        description : ""
+    schema          :
+        id          :
+            type    : Number
+            required: true
+        name        :
+            type    : String
+            required: true
+        year        :
+            type    : Number
+            required: true
+            validate:
+                validator: (v) ->
+                    return 0 <= v and v <= new Date().getFullYear()
+                message: 'INVALID'
+        country     :
+            type    : String
+            required: true
+        type        :
+            type    : String
+            required: true
+            enum    : [
+                "red",
+                "white",
+                "rose"
+            ]
+        description :
+            type    : String
+            required: true

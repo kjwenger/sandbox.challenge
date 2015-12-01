@@ -1,0 +1,260 @@
+debug          = require("debug")("wines-steps")
+child_process  = require "child_process"
+mongo          = require("mongodb").MongoClient
+mongoose       = require "mongoose"
+http           = require "http"
+restify        = require "restify"
+wine           = require "../../app/model/wine"
+Wine           = null
+mongoUrl       = "mongodb://localhost:27017/test"
+nodeUrl        = "http://localhost:8080"
+db             = null
+client         = null
+err            = null
+req            = null
+res            = null
+data           = null
+
+module.exports = () ->
+    this.registerHandler "BeforeFeatures", (event, callback) ->
+        debug "BeforeFeatures ... mongoUrl=#{mongoUrl}"
+        mongoose.connect mongoUrl
+        err, db = mongo.connect! mongoUrl
+        debug "BeforeFeatures ... err=#{err}"
+        debug "BeforeFeatures ... db=#{db}"
+        if err
+            return callback(new Error(
+                "Could not connect to MongoDB #{mongoUrl} because of #{err}"))
+        if not wine
+            return callback(new Error(
+                "Expected to have required wine module"))
+        Schema = new mongoose.Schema(wine.schema)
+        debug "BeforeFeatures ... Schema=#{Schema}"
+        Wine = mongoose.model("wines", Schema)
+        debug "BeforeFeatures ... Wine=#{Wine}"
+        if not Wine
+            return callback(new Error(
+                "Expected to have Wine class"))
+        client = restify.createJsonClient
+            url: nodeUrl
+            version: '*'
+        callback()
+    this.registerHandler "AfterFeatures", (event, callback) ->
+        if client
+            err, req, res, data = client.post! "/shutdown"
+            debug "AfterFeatures ... err=#{err}"
+            debug "AfterFeatures ... data=%j", data
+            client.close()
+        debug "AfterFeatures ... db=#{db}"
+        if db then db.close()
+        debug "AfterFeatures ... mongoose.connection=#{mongoose.connection}"
+        if mongoose.connection then mongoose.connection.close()
+        callback()
+#    this.Before (scenario) -> this
+#    this.After (scenario) -> this
+    this.Given /^I have registered all wines$/, (callback) ->
+        err, collection = db.collection! "wines"
+        debug "I have registered all wines ... err=#{err}"
+        debug "I have registered all wines ... collection=#{collection}"
+        if err
+            return callback(new Error(
+                "Could not get wines collection because of #{err}"))
+        err, results = collection.deleteMany! {}
+        debug "I have registered all wines ... err=#{err}"
+        debug "I have registered all wines ... results=#{results}"
+        if err
+            return callback(new Error(
+                "Could not clear wines collection because of #{err}"))
+        newWine = new Wine(
+            id         : 1,
+            name       : "Pinot noir",
+            year       : 2011,
+            country    : "France",
+            type       : "red",
+            description: "Sensual and understated"
+        )
+        debug "I have registered all wines ... newWine=%j", newWine
+        err = newWine.save!
+        debug "I have registered all wines ... newWine=%j", newWine
+        debug "I have registered all wines ... err=#{err}"
+        if err
+            return callback(new Error(
+                "Could not create new wine because of #{err}"))
+        if not newWine
+            return callback(new Error(
+                "Expected to have new wine"))
+        if not newWine.id is 1
+            return callback(new Error(
+                "Expected wine to have id 1"))
+        if not newWine.name is "Pinot noir"
+            return callback(new Error(
+                "Expected wine to have name 'Pinot noir'"))
+        if not newWine.year is 2011
+            return callback(new Error(
+                "Expected wine to have year 2011"))
+        if not newWine.type is "red"
+            return callback(new Error(
+                "Expected wine to have type 'red'"))
+        if not newWine.description is "Sensual and understated"
+            return callback(new Error(
+                "Expected wine to have description 'Sensual and understated'"))
+        newWine = new Wine(
+            id         : 2,
+            name       : "Zinfandel",
+            year       : 1990,
+            country    : "Croatia",
+            type       : "red",
+            description: "Thick and jammy"
+        )
+        debug "I have registered all wines ... newWine=%j", newWine
+        err = newWine.save!
+        debug "I have registered all wines ... newWine=%j", newWine
+        debug "I have registered all wines ... err=#{err}"
+        if err
+            return callback(new Error(
+                "Could not create new wine because of #{err}"))
+        if not newWine
+            return callback(new Error(
+                "Expected to have new wine"))
+        if not newWine.id is 2
+            return callback(new Error(
+                "Expected wine to have id 2"))
+        if not newWine.name is "Zinfandel"
+            return callback(new Error(
+                "Expected wine to have name 'Zinfandel'"))
+        if not newWine.year is 2990
+            return callback(new Error(
+                "Expected wine to have year 2990"))
+        if not newWine.type is "red"
+            return callback(new Error(
+                "Expected wine to have type 'red'"))
+        if not newWine.description is "Thick and jammy"
+            return callback(new Error(
+                "Expected wine to have description 'Thick and jammy'"))
+        callback()
+    this.Given /^I have started the node app$/, (callback) ->
+        debug "I have started the node app ... module.exports.node=#{module.exports.node}",
+        if not module.exports.node
+            appname = "target/app/app"
+            child_process.exec "pkill -9 -f 'node #{appname}'"
+            argv = [ appname ]
+            module.exports.node = child_process.spawn "node", argv
+            yellow = `"\033[0;33m"`
+            green = `"\033[0;32m"`
+            red = `"\033[0;31m"`
+            normal = `"\033[0;39m"`
+            module.exports.node.stdout.on "data", (data) ->
+                process.stdout.write "#{green}#{data}#{normal}"
+            module.exports.node.stderr.on "data", (data) ->
+                process.stdout.write "#{yellow}#{data}#{normal}"
+        callback()
+    this.Given /^data is reset$/, (callback) ->
+        data = {}
+        debug "data is reset ... data=%j", data
+        callback()
+    this.When /^data has property "([^"]*)" with value ([-]?\d+)$/, (property, value, callback) ->
+        data[property] = value
+        debug "data has property '#{property}'' with value #{value} ... data=%j", data
+        callback()
+    this.When /^data has property "([^"]*)" with value "([^"]*)"$/, (property, value, callback) ->
+        data[property] = value
+        debug "data has property '#{property}'' with value '#{value}' ... data=%j", data
+        callback()
+    this.When /^I get all wines$/, (callback) ->
+        debug "I get all wines"
+        err, req, res, data = client.get! "/wines"
+        debug "I get all wines ... err=#{err}"
+        debug "I get all wines ... res.statusCode=#{res.statusCode}"
+        debug "I get all wines ... data=%j", data
+        callback()
+    this.When /^I get wine (\d+)$/, (id, callback) ->
+        debug "I get wine #{id}"
+        err, req, res, data = client.get! "/wines/#{id}"
+        debug "I get wine #{id} ... err=#{err}"
+        debug "I get wine #{id} ... res.statusCode=#{res.statusCode}"
+        debug "I get wine #{id} ... data=%j", data
+        callback()
+    this.When /^I post wine (\d+)$/, (id, callback) ->
+        debug "I post wine #{id}"
+        debug "I post wine #{id} ... data=%j", data
+        err, req, res, data = client.post! "/wines", data
+        debug "I post wine #{id} ... err=#{err}"
+        debug "I post wine #{id} ... res.statusCode=#{res.statusCode}"
+        debug "I post wine #{id} ... data=%j", data
+        callback()
+    this.When /^I put wine (\d+)$/, (id, callback) ->
+        debug "I put wine #{id}"
+        debug "I put wine #{id} ... data=%j", data
+        err, req, res, data = client.put! "/wines/#{id}", data
+        debug "I put wine #{id} ... err=#{err}"
+        debug "I put wine #{id} ... res.statusCode=#{res.statusCode}"
+        debug "I put wine #{id} ... data=%j", data
+        callback()
+    this.When /^I delete wine (\d+)$/, (id, callback) ->
+        debug "I delete wine #{id}"
+        err, req, res, data = client.del! "/wines/#{id}"
+        debug "I delete wine #{id} ... err=#{err}"
+        debug "I delete wine #{id} ... res.statusCode=#{res.statusCode}"
+        debug "I delete wine #{id} ... data=%j", data
+        callback()
+    this.Then /^response should have status code (\d+)$/, (statusCode, callback) ->
+        seen = []
+#        debug "response should have status code ... res=" +  JSON.stringify res, (key, val) ->
+#            try
+#                if val isnt null and typeof val is "object"
+#                    if seen.indexOf(val) >= 0
+#                        return
+#                    seen.push(val)
+#                return val
+#            catch err
+#                debug "response should have status code ... JSON.stringify res(...) err=#{err}"
+        debug "response should have status code ... err=%j", err
+        debug "response should have status code ... statusCode=#{statusCode}"
+        debug "response should have status code ... typeof statusCode=#{typeof statusCode}"
+        debug "response should have status code ... res.statusCode=#{res.statusCode}"
+        debug "response should have status code ... typeof res.statusCode=#{typeof res.statusCode}"
+        debug "response should have status code ... res.statusCode.toString() isnt statusCode=#{res.statusCode.toString() isnt statusCode}"
+        if res.statusCode.toString() isnt statusCode
+            return callback(new Error(
+                "Expected to have response status code #{statusCode} but got #{res.statusCode} with err " + JSON.stringify(err) + " and data " + JSON.stringify(data)))
+        debug "response should have status code ... callback()"
+        callback()
+    this.Then /^data should have length (\d+)$/, (length, callback) ->
+        len = parseInt(length, 10)
+        debug "data should have length #{length} ... data.length=#{data and data.length}"
+        debug "data should have length #{length} ... data.length isnt length=#{data.length isnt len}"
+        if not data or (data.length isnt len)
+            return callback(new Error(
+                "Expected data to have length #{length} but got #{data and data.length}"))
+        callback()
+    this.Then /^data should have property "([^"]*)" with value ([-]?\d+)$/, (property, value, callback) ->
+        val = parseInt(value)
+        debug "data should have property '#{property}' with value #{value} ... data.#{property}=#{data and data[property]}"
+        debug "data should have property '#{property}' with value #{value} ... (data[property] isnt val)=#{data and (data[property] isnt val)}"
+        if not data or (data[property] isnt val)
+            return callback(new Error(
+                "Expected data to have #{property} '#{value}' but got #{data and data[property]}"))
+        callback()
+    this.Then /^data should have property "([^"]*)" with value "([^"]*)"$/, (property, value, callback) ->
+        debug "data should have property '#{property}'' with value '#{value}'' ... data.#{property}=#{data and data[property]}"
+        debug "data should have property '#{property}' with value #{value} ... (data[property] isnt value)=#{data and (data[property] isnt value)}"
+        if not data or (data[property] isnt value)
+            return callback(new Error(
+                "Expected data to have #{property} '#{value}' but got #{data and data[property]}"))
+        callback()
+    this.Then /^data should be '([^']*)'$/, (json, callback) ->
+        debug "data should be ... json=#{json}"
+        parsed = JSON.parse(json)
+        debug "data should be ... parsed=%j", parsed
+        if data isnt parsed
+            return callback(new Error(
+                "Expected data to be #{json} but got #{JSON.stringify(data)}"))
+        callback()
+    this.Then /^err should be '([^']*)'$/, (json, callback) ->
+        debug "err should be ... json=#{json}"
+        parsed = JSON.parse(json)
+        debug "err should be ... parsed=%j", parsed
+        if err isnt parsed
+            return callback(new Error(
+                "Expected err to be #{json} but got #{JSON.stringify(err)}"))
+        callback()

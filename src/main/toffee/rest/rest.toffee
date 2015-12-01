@@ -1,0 +1,11 @@
+###global JSON,module,require,console,process###
+traces   = require "debug"
+debug    = require("debug")("rest")
+wines    = require "./rest_wines"
+
+module.exports =
+    register: (server) ->
+        wines.register server, "/"
+        debug "register() wines.register server"
+
+        return this
