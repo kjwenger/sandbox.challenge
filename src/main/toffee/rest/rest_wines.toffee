@@ -1,10 +1,11 @@
 ###global JSON,module,require,console,process###
-debug           = require("debug")("rest_wines")
-wine            = require "../model/wine"
-mongoose        = require "mongoose"
-mongooseHidden  = require("mongoose-hidden")()
-restify         = require "restify"
-restifyMongoose = require "restify-mongoose"
+debug                   = require("debug")("rest_wines")
+wine                    = require "../model/wine"
+mongoose                = require "mongoose"
+mongooseHidden          = require("mongoose-hidden")()
+mongooseUniqueValidator = require "mongoose-unique-validator"
+restify                 = require "restify"
+restifyMongoose         = require "restify-mongoose"
 
 module.exports  =
     register: (server, path) ->
@@ -13,11 +14,12 @@ module.exports  =
         url = "mongodb://localhost:27017/test"
         mongoose.connect url
 
-        Schema = new mongoose.Schema(wine.schema)
-        Schema.plugin mongooseHidden, defaultHidden:
+        schema = new mongoose.Schema(wine.schema)
+        schema.plugin mongooseHidden, defaultHidden:
             _id: true
             __v: true
-        Wine = mongoose.model("wines", Schema)
+        schema.plugin mongooseUniqueValidator, error: "VALIDATION_ERROR"
+        Wine = mongoose.model("wines", schema)
         options = baseUrl: "http://localhost", queryString: 'id'
         wines = restifyMongoose(Wine, options)
 

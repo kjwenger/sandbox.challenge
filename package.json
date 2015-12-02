@@ -30,6 +30,7 @@
     "mongodb": "~2.0.49",
     "mongoose": "~4.2.8",
     "mongoose-hidden": "~0.5.1",
+    "mongoose-unique-validator": "^0.6.2",
     "restify": "~4.0.3",
     "restify-mongoose": "~0.2.6"
   },
