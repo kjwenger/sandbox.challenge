@@ -1,13 +1,14 @@
 ###global JSON,module,require,console,process###
 
 debug     = require("debug")("app")
+dotenv    = require "dotenv"
 restify   = require "restify"
-util      = require "util"
 rest      = require "./rest/rest"
-port      = process.env.PORT or 8080
 
+dotenv.load()
+port      = process.env.PORT or 80
 
-server = restify.createServer name: "sandbox.challenge"
+server    = restify.createServer name: "sandbox.challenge"
 
 server.use restify.fullResponse()
 server.use restify.gzipResponse()

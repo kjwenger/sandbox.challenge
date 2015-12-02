@@ -1,14 +1,16 @@
 
 /*global JSON,module,require,console,process*/
-var debug, error, port, rest, restify, server, util;
+var debug, dotenv, error, port, rest, restify, server;
 
 debug = require("debug")("app");
 
+dotenv = require("dotenv");
+
 restify = require("restify");
 
-util = require("util");
-
 rest = require("./rest/rest");
+
+dotenv.load();
 
 port = process.env.PORT || 8080;
 

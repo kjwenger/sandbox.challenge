@@ -1,6 +1,6 @@
 
 /*global JSON,module,require,console,process*/
-var debug, mongoose, mongooseHidden, restify, restifyMongoose, wine;
+var debug, host, mongoose, mongooseHidden, nodeUrl, port, restify, restifyMongoose, wine;
 
 debug = require("debug")("rest_wines");
 
@@ -14,11 +14,17 @@ restify = require("restify");
 
 restifyMongoose = require("restify-mongoose");
 
+host = process.env.HOST || "localhost";
+
+port = process.env.PORT || 8080;
+
+nodeUrl = "http://" + host + ":" + port;
+
 module.exports = {
   register: function(server, path) {
     var Wine, options, schema, url, wines;
     path = path || "";
-    url = "mongodb://localhost:27017/test";
+    url = process.env.MONGODB_URL;
     mongoose.connect(url);
     schema = new mongoose.Schema(wine.schema);
     schema.plugin(mongooseHidden, {
@@ -29,7 +35,7 @@ module.exports = {
     });
     Wine = mongoose.model("wines", schema);
     options = {
-      baseUrl: "http://localhost",
+      baseUrl: nodeUrl,
       queryString: "id"
     };
     wines = restifyMongoose(Wine, options);

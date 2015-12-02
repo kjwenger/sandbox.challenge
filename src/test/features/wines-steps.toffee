@@ -1,4 +1,5 @@
 debug          = require("debug")("wines-steps")
+dotenv         = require "dotenv"
 child_process  = require "child_process"
 mongo          = require("mongodb").MongoClient
 mongoose       = require "mongoose"
@@ -6,8 +7,11 @@ http           = require "http"
 restify        = require "restify"
 wine           = require "../../app/model/wine"
 Wine           = null
-mongoUrl       = "mongodb://localhost:27017/test"
-nodeUrl        = "http://localhost:8080"
+dotenv.load()
+mongoUrl       = process.env.MONGODB_URL
+host           = process.env.HOST or "localhost"
+port           = process.env.PORT or 80
+nodeUrl        = "http://#{host}:#{port}"
 db             = null
 client         = null
 err            = null

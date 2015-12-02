@@ -5,12 +5,15 @@ mongoose        = require "mongoose"
 mongooseHidden  = require("mongoose-hidden")()
 restify         = require "restify"
 restifyMongoose = require "restify-mongoose"
+host            = process.env.HOST or "localhost"
+port            = process.env.PORT or 80
+nodeUrl         = "http://#{host}:#{port}"
 
 module.exports  =
     register: (server, path) ->
         path = path or ""
 
-        url = "mongodb://localhost:27017/test"
+        url = process.env.MONGODB_URL
         mongoose.connect url
 
         schema = new mongoose.Schema(wine.schema)
@@ -19,7 +22,7 @@ module.exports  =
             __v: true
         Wine = mongoose.model("wines", schema)
 
-        options = baseUrl: "http://localhost", queryString: "id"
+        options = baseUrl: nodeUrl, queryString: "id"
 #        wines = restifyMongoose(Wine, options).serve(path + "/wines", server)
 #        server.put path + "/wines/:id", wines.update()
         wines = restifyMongoose(Wine, options)
