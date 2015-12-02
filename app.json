@@ -1,0 +1,12 @@
+{
+  "name": "sandbox.challenge",
+  "description": "DEVELOPER CHALLENGE: Implement a RESTful API with NodeJS",
+  "repository": "https://github.com/kjwenger/sandbox.challenge",
+  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "keywords": [
+    "node",
+    "restify",
+    "mongodb"
+  ],
+  "image": "heroku/nodejs"
+}
