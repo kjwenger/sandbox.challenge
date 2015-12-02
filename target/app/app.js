@@ -12,7 +12,7 @@ rest = require("./rest/rest");
 
 dotenv.load();
 
-port = process.env.PORT || 8080;
+port = process.env.PORT || 80;
 
 server = restify.createServer({
   name: "sandbox.challenge"
