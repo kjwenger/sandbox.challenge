@@ -15,6 +15,7 @@ module.exports = {
     debug("format() formatter=" + formatter);
     server.formatters["application/json"] = function(req, res, body, callback) {
       var err, error, errors, name;
+      res.setHeader("Content-Type", "application/json; charset=utf-8");
       if (body instanceof Error) {
         res.statusCode = body.statusCode || 500;
         if (body.statusCode === 404) {
@@ -47,6 +48,10 @@ module.exports = {
         }
       } else if (res.statusCode === 201) {
         res.statusCode = 200;
+      } else if (req.method === "delete" || req.method === "DELETE") {
+        body = {
+          success: true
+        };
       }
       return formatter(req, res, body, callback);
     };

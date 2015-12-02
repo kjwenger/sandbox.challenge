@@ -8,6 +8,7 @@ module.exports =
         formatter = server.formatters["application/json"]
         debug "format() formatter=#{formatter}"
         server.formatters["application/json"] = (req, res, body, callback) ->
+            res.setHeader "Content-Type", "application/json; charset=utf-8"
             if body instanceof Error
                 res.statusCode = body.statusCode or 500
                 if body.statusCode is 404
@@ -27,6 +28,8 @@ module.exports =
                                     debug "newFormatter err=#{err}"
             else if res.statusCode is 201
                 res.statusCode = 200
+            else if req.method is "delete" or req.method is "DELETE"
+                body = success: true
             return formatter(req, res, body, callback)
         return this
     register: (server) ->

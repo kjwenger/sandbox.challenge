@@ -37,9 +37,27 @@ module.exports = {
       }
     });
     Wine = mongoose.model("wines", schema);
+    function filter(req) {
+      var query;
+      query = {};
+      if (req.query.name) {
+        query.name = req.query.name;
+      }
+      if (req.query.year) {
+        query.year = req.query.year;
+      }
+      if (req.query.type) {
+        query.type = req.query.type;
+      }
+      if (req.query.country) {
+        query.country = req.query.country;
+      }
+      return query;
+    };
     options = {
       baseUrl: nodeUrl,
-      queryString: "id"
+      queryString: "id",
+      filter: filter
     };
     wines = restifyMongoose(Wine, options);
     server.get(path + "/wines", wines.query());

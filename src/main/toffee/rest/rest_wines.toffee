@@ -16,21 +16,25 @@ module.exports  =
         path = path or ""
 
         mongoose.connect mongoUrl
-
         schema = new mongoose.Schema(wine.schema)
         schema.plugin mongooseHidden, defaultHidden:
             _id: true
             __v: true
         Wine = mongoose.model("wines", schema)
 
-        options = baseUrl: nodeUrl, queryString: "id"
-#        wines = restifyMongoose(Wine, options).serve(path + "/wines", server)
-#        server.put path + "/wines/:id", wines.update()
-        wines = restifyMongoose(Wine, options)
-        server.get   path + "/wines",     wines.query()
-        server.get   path + "/wines/:id", wines.detail()
-        server.post  path + "/wines",     wines.insert()
-        server.put   path + "/wines/:id", wines.update()
-        server.del   path + "/wines/:id", wines.remove()
+        filter = (req) ->
+            query = {}
+            if req.query.name    then query.name    = req.query.name
+            if req.query.year    then query.year    = req.query.year
+            if req.query.type    then query.type    = req.query.type
+            if req.query.country then query.country = req.query.country
+            return query
+        options = baseUrl: nodeUrl, queryString: "id", filter: filter
+        wines = restifyMongoose Wine, options
+        server.get  path + "/wines",     wines.query()
+        server.get  path + "/wines/:id", wines.detail()
+        server.post path + "/wines",     wines.insert()
+        server.put  path + "/wines/:id", wines.update()
+        server.del  path + "/wines/:id", wines.remove()
 
         return this

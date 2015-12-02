@@ -166,6 +166,13 @@ module.exports = () ->
         debug "I get all wines ... res.statusCode=#{res.statusCode}"
         debug "I get all wines ... data=%j", data
         callback()
+    this.When /^I get wines queried with '([^']*)'$/, (query, callback) ->
+        debug "I get wines queried with ... query=#{query}"
+        err, req, res, data = client.get! "/wines?#{query}"
+        debug "I get wines queried with ... err=#{err}"
+        debug "I get wines queried with ... res.statusCode=#{res.statusCode}"
+        debug "I get wines queried with ... data=%j", data
+        callback()
     this.When /^I get wine (\d+)$/, (id, callback) ->
         debug "I get wine #{id}"
         err, req, res, data = client.get! "/wines/#{id}"
@@ -197,16 +204,6 @@ module.exports = () ->
         debug "I delete wine #{id} ... data=%j", data
         callback()
     this.Then /^response should have status code (\d+)$/, (statusCode, callback) ->
-        seen = []
-#        debug "response should have status code ... res=" +  JSON.stringify res, (key, val) ->
-#            try
-#                if val isnt null and typeof val is "object"
-#                    if seen.indexOf(val) >= 0
-#                        return
-#                    seen.push(val)
-#                return val
-#            catch err
-#                debug "response should have status code ... JSON.stringify res(...) err=#{err}"
         debug "response should have status code ... err=%j", err
         debug "response should have status code ... statusCode=#{statusCode}"
         debug "response should have status code ... typeof statusCode=#{typeof statusCode}"
@@ -217,6 +214,17 @@ module.exports = () ->
             return callback(new Error(
                 "Expected to have response status code #{statusCode} but got #{res.statusCode} with err " + JSON.stringify(err) + " and data " + JSON.stringify(data)))
         debug "response should have status code ... callback()"
+        callback()
+    this.Then /^response should have header property "([^"]*)" with value "([^"]*)"$/, (property, value, callback) ->
+        debug "response should have header property ... property=#{property}"
+        debug "response should have header property ... value=#{value}"
+        header = res.headers[property]
+        debug "response should have header property ... header=#{header}"
+        if header isnt value
+            return callback(new Error(
+                "Expected to have response header '#{property}' as '#{value}' but got '#{header}' in all headers: " +
+                    JSON.stringify(res.headers)))
+        debug "response should have header property ... callback()"
         callback()
     this.Then /^data should have length (\d+)$/, (length, callback) ->
         len = parseInt(length, 10)
