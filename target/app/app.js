@@ -2,15 +2,17 @@
 /*global JSON,module,require,console,process*/
 var debug, dotenv, error, port, rest, restify, server;
 
-debug = require("debug")("app");
-
 dotenv = require("dotenv");
+
+dotenv.config({
+  path: process.argv[2] || ".env"
+});
+
+debug = require("debug")("app");
 
 restify = require("restify");
 
 rest = require("./rest/rest");
-
-dotenv.load();
 
 port = process.env.PORT || 80;
 

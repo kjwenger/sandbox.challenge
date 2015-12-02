@@ -49,6 +49,14 @@ module.exports = function (grunt) {
         execute: {
             start: {
                 src: "target/app/app.js"
+            },
+            local: {
+                options: {
+                    args: [
+                        'src/test/.env'
+                    ]
+                },
+                src: "target/app/app.js"
             }
         }
     });

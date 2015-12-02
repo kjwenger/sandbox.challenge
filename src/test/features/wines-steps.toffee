@@ -7,11 +7,13 @@ http           = require "http"
 restify        = require "restify"
 wine           = require "../../app/model/wine"
 Wine           = null
-dotenv.load()
-mongoUrl       = process.env.MONGODB_URL
+envPath        = "src/test/.env"
+dotenv.config path: envPath
+mongoUrl       = process.env.MONGODB_URL or "mongodb://localhost:27017/test"
+protocol       = process.env.PROTOCOL or "http"
 host           = process.env.HOST or "localhost"
-port           = process.env.PORT or 80
-nodeUrl        = "http://#{host}:#{port}"
+port           = process.env.PORT
+nodeUrl        = if port then "#{protocol}://#{host}:#{port}" else "#{protocol}://#{host}"
 db             = null
 client         = null
 err            = null
@@ -142,12 +144,8 @@ module.exports = () ->
         if not module.exports.node
             appname = "target/app/app"
             child_process.exec "pkill -9 -f 'node #{appname}'"
-            argv = [ appname ]
+            argv = [ appname, envPath ]
             module.exports.node = child_process.spawn "node", argv
-#            module.exports.node.stdout.on "data", (data) ->
-#                process.stdout.write ", node: '#{data}'"
-#            module.exports.node.stderr.on "data", (data) ->
-#                process.stdout.write ", node: '#{data}'"
         callback()
     this.Given /^data is reset$/, (callback) ->
         data = {}

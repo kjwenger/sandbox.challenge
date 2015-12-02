@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node target/app/app.js",
     "grunt": "grunt",
+    "local": "node target/app/app.js src/test/.env",
     "test": "grunt test"
   },
   "repository": {
