@@ -2,10 +2,13 @@
 
 debug     = require("debug")("app")
 restify   = require "restify"
+util      = require "util"
 rest      = require "./rest/rest"
 port      = process.env.PORT or 8080
 
-server = restify.createServer name: 'sandbox.challenge'
+
+server = restify.createServer name: "sandbox.challenge"
+
 server.use restify.fullResponse()
 server.use restify.gzipResponse()
 server.use restify.acceptParser(server.acceptable)
@@ -16,10 +19,10 @@ server.pre restify.pre.userAgentConnection()
 rest.register server
 
 server.post "/shutdown", (req, res) ->
-    debug 'server.post("/shutdown").callback()'
+    debug "server.post('/shutdown').callback()"
     res.send success: true
     setTimeout (() ->
-        debug 'server.post("/shutdown").callback().setTimeout()'
+        debug "server.post('/shutdown').callback().setTimeout()"
         server.close()
         process.exit 0), 100
 

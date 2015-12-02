@@ -17,38 +17,45 @@ module.exports =
         this.type        = type        or ""
         this.description = description or ""
         this
-    model           :
-        id          : 0
-        name        : ""
-        year        : null
-        country     : ""
-        type        : ""
-        description : ""
-    schema          :
-        id          :
-            type    : Number
-            required: true
-        name        :
-            type    : String
-            required: true
-        year        :
-            type    : Number
-            required: true
-            validate:
-                validator: (v) ->
-                    return 0 <= v and v <= new Date().getFullYear()
-                message: 'INVALID'
-        country     :
-            type    : String
-            required: true
-        type        :
-            type    : String
-            required: true
-            enum    : [
-                "red",
-                "white",
-                "rose"
-            ]
-        description :
-            type    : String
-            required: true
+    model                :
+        id               : 0
+        name             : ""
+        year             : null
+        country          : ""
+        type             : ""
+        description      : ""
+    schema               :
+        id               :
+            type         : Number
+            required     : true
+        name             :
+            type         : String
+            required     : true
+            validate     :
+                validator: (v) -> v
+                message  : "MISSING"
+        year             :
+            type         : Number
+            required     : true
+            validate     :
+                validator: (v) -> 0 <= v and v <= new Date().getFullYear()
+                message  : "INVALID"
+        country          :
+            type         : String
+            required     : true
+            validate     :
+                validator: (v) -> v
+                message  : "MISSING"
+        type             :
+            type         : String
+            required     : true
+            enum         :
+                values   : [
+                    "red",
+                    "white",
+                    "rose"
+                ]
+                message  : 'INVALID'
+        description      :
+            type         : String
+            required     : true

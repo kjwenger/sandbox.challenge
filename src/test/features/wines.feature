@@ -32,7 +32,8 @@ Feature: Wines
   Scenario: Get wine 3
     Given I have started the node app
     When I get wine 3
-    Then response should have status code 404
+    Then response should have status code 400
+    And data should be '{"error":"UNKNOWN_OBJECT"}'
 
   Scenario: Post wine 3
     Given I have started the node app
@@ -82,7 +83,7 @@ Feature: Wines
     And data has property "description" with value "The Sean Connery of red wines"
     And I post wine 3
     Then response should have status code 400
-    And data should be '{"error":"VALIDATION_ERROR","validation":{"country":"MISSING","year":"INVALID"}}'
+    And data should be '{"error":"VALIDATION_ERROR","validation":{"country":"MISSING","year":"MISSING"}}'
 
   Scenario: Post wine 3
     Given I have started the node app
@@ -107,7 +108,7 @@ Feature: Wines
     And data has property "type" with value "red"
     And data has property "description" with value "The Sean Connery of red wines"
     And I post wine 3
-    Then response should have status code 201
+    Then response should have status code 200
     And data should have property "id" with value 3
     And data should have property "name" with value "Cabernet sauvignon"
     And data should have property "year" with value 2013
@@ -151,7 +152,7 @@ Feature: Wines
   Scenario: Put wine 3
     Given I have started the node app
     And data is reset
-    When data has property "id" with value 1
+    When data has property "id" with value 3
     And data has property "name" with value "Cabernet sauvignon"
     And data has property "year" with value 2013
     And data has property "country" with value "France"
@@ -169,10 +170,10 @@ Feature: Wines
   Scenario: Put wine 3
     Given I have started the node app
     And data is reset
-    When data has property "id" with value 1
+    When data has property "id" with value 3
     And data has property "description" with value "Similar to merlot"
     And I put wine 3
-    Then response should have status code 201
+    Then response should have status code 200
     And data should have property "id" with value 3
     And data should have property "name" with value "Cabernet sauvignon"
     And data should have property "year" with value 2013
@@ -189,19 +190,20 @@ Feature: Wines
     And data has property "type" with value "red"
     And data has property "description" with value "Similar to merlot"
     And I put wine 4
-    Then response should have status code 405
+    Then response should have status code 400
 
   Scenario: Put wine 4
     Given I have started the node app
     And data is reset
     And data has property "description" with value "Similar to merlot"
     And I put wine 4
-    Then response should have status code 405
+    Then response should have status code 400
 
   Scenario: Get wine 4
     Given I have started the node app
     When I get wine 4
-    Then response should have status code 404
+    Then response should have status code 400
+    And data should be '{"error":"UNKNOWN_OBJECT"}'
 
   Scenario: Delete wine 3
     Given I have started the node app
@@ -211,4 +213,5 @@ Feature: Wines
   Scenario: Delete wine 3
     Given I have started the node app
     When I delete wine 3
-    Then response should have status code 404
+    Then response should have status code 400
+    And data should be '{"error":"UNKNOWN_OBJECT"}'

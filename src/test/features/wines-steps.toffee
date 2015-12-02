@@ -18,7 +18,8 @@ data           = null
 module.exports = () ->
     this.registerHandler "BeforeFeatures", (event, callback) ->
         debug "BeforeFeatures ... mongoUrl=#{mongoUrl}"
-        mongoose.connect mongoUrl
+        mongoose.connect! mongoUrl
+        mongoose.connection.db.dropDatabase()
         err, db = mongo.connect! mongoUrl
         debug "BeforeFeatures ... err=#{err}"
         debug "BeforeFeatures ... db=#{db}"
@@ -139,14 +140,10 @@ module.exports = () ->
             child_process.exec "pkill -9 -f 'node #{appname}'"
             argv = [ appname ]
             module.exports.node = child_process.spawn "node", argv
-            yellow = `"\033[0;33m"`
-            green = `"\033[0;32m"`
-            red = `"\033[0;31m"`
-            normal = `"\033[0;39m"`
-            module.exports.node.stdout.on "data", (data) ->
-                process.stdout.write "#{green}#{data}#{normal}"
-            module.exports.node.stderr.on "data", (data) ->
-                process.stdout.write "#{yellow}#{data}#{normal}"
+#            module.exports.node.stdout.on "data", (data) ->
+#                process.stdout.write ", node: '#{data}'"
+#            module.exports.node.stderr.on "data", (data) ->
+#                process.stdout.write ", node: '#{data}'"
         callback()
     this.Given /^data is reset$/, (callback) ->
         data = {}
@@ -246,15 +243,19 @@ module.exports = () ->
         debug "data should be ... json=#{json}"
         parsed = JSON.parse(json)
         debug "data should be ... parsed=%j", parsed
-        if data isnt parsed
+        stringified = JSON.stringify(data)
+        debug "data should be ... stringified=#{stringified}"
+        if json isnt stringified
             return callback(new Error(
-                "Expected data to be #{json} but got #{JSON.stringify(data)}"))
+                "Expected data to be #{json} but got #{stringified} with err #{JSON.stringify(err)}"))
         callback()
     this.Then /^err should be '([^']*)'$/, (json, callback) ->
         debug "err should be ... json=#{json}"
         parsed = JSON.parse(json)
         debug "err should be ... parsed=%j", parsed
-        if err isnt parsed
+        stringified = JSON.stringify(err)
+        debug "data should be ... stringified=#{stringified}"
+        if json isnt stringified
             return callback(new Error(
-                "Expected err to be #{json} but got #{JSON.stringify(err)}"))
+                "Expected err to be #{json} but got #{stringified} with data #{JSON.stringify(data)}"))
         callback()

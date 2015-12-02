@@ -45,11 +45,17 @@ module.exports = function (grunt) {
             features: [
                 "src/test/features/wines.feature"
             ]
+        },
+        execute: {
+            start: {
+                src: "target/app/app.js"
+            }
         }
     });
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks("grunt-toffee");
     grunt.loadNpmTasks("grunt-cucumberjs");
+    grunt.loadNpmTasks("grunt-execute");
     grunt.loadNpmTasks("gruntify-eslint");
     grunt.registerTask("compile", [
         "toffee"

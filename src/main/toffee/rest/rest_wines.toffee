@@ -1,11 +1,10 @@
 ###global JSON,module,require,console,process###
-debug                   = require("debug")("rest_wines")
-wine                    = require "../model/wine"
-mongoose                = require "mongoose"
-mongooseHidden          = require("mongoose-hidden")()
-mongooseUniqueValidator = require "mongoose-unique-validator"
-restify                 = require "restify"
-restifyMongoose         = require "restify-mongoose"
+debug           = require("debug")("rest_wines")
+wine            = require "../model/wine"
+mongoose        = require "mongoose"
+mongooseHidden  = require("mongoose-hidden")()
+restify         = require "restify"
+restifyMongoose = require "restify-mongoose"
 
 module.exports  =
     register: (server, path) ->
@@ -18,15 +17,16 @@ module.exports  =
         schema.plugin mongooseHidden, defaultHidden:
             _id: true
             __v: true
-        schema.plugin mongooseUniqueValidator, error: "VALIDATION_ERROR"
         Wine = mongoose.model("wines", schema)
-        options = baseUrl: "http://localhost", queryString: 'id'
-        wines = restifyMongoose(Wine, options)
 
+        options = baseUrl: "http://localhost", queryString: "id"
+#        wines = restifyMongoose(Wine, options).serve(path + "/wines", server)
+#        server.put path + "/wines/:id", wines.update()
+        wines = restifyMongoose(Wine, options)
         server.get   path + "/wines",     wines.query()
         server.get   path + "/wines/:id", wines.detail()
         server.post  path + "/wines",     wines.insert()
-        server.patch path + "/wines/:id", wines.update()
+        server.put   path + "/wines/:id", wines.update()
         server.del   path + "/wines/:id", wines.remove()
 
         return this
