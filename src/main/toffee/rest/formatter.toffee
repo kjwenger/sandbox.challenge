@@ -1,0 +1,39 @@
+###global JSON,module,require,console,process###
+traces      = require "debug"
+debug       = require("debug")("formatter")
+contentType = "application/json"
+
+module.exports =
+    register: (server) ->
+        formatter = server.formatters[contentType]
+        debug "format() formatter=#{formatter}"
+        server.formatters[contentType] = (req, res, body, callback) ->
+            res.setHeader "Content-Type", "#{contentType}; charset=utf-8"
+            if body instanceof Error
+                res.statusCode = body.statusCode or 500
+                if body.statusCode is 404
+                    res.statusCode = 400
+                    body = error: "UNKNOWN_OBJECT"
+                else
+                    if body.body then body = body.body
+                    matches = body.message and
+                        body.message.match(/^E11000.*\$(\w+)_.*\{ : ([-]?\d+) \}$/)
+                    if matches and (matches.length > 2)
+                        body = error: "DUPLICATION_ERROR", duplication: {}
+                        body.duplication[matches[1]] = matches[2]
+                    if body.message is "Validation failed"
+                        errors = body.errors
+                        body = error: "VALIDATION_ERROR", validation: {}
+                        if errors
+                            for name, error of errors
+                                try
+                                    body.validation[name] =
+                                        if error.kind is "required" then "MISSING" else error.message
+                                catch err
+                                    debug "newFormatter err=#{err}"
+            else if res.statusCode is 201
+                res.statusCode = 200
+            else if req.method is "delete" or req.method is "DELETE"
+                body = success: true
+            return formatter(req, res, body, callback)
+        return this

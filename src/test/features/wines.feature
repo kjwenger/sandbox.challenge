@@ -2,7 +2,9 @@ Feature: Wines
 
   Scenario: Get all wines
     Given I have registered all wines
-      And I have started the node app
+    And I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get all wines
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -10,6 +12,8 @@ Feature: Wines
 
   Scenario: Get french wines
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wines queried with 'q={"country":"France"}'
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -17,6 +21,8 @@ Feature: Wines
 
   Scenario: Get french wines simplified
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wines queried with 'country=France'
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -24,6 +30,8 @@ Feature: Wines
 
   Scenario: Get croatian wines
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wines queried with 'q={"country":"Croatia"}'
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -31,6 +39,8 @@ Feature: Wines
 
   Scenario: Get croatian wines simplified
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wines queried with 'country=Croatia'
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -38,6 +48,8 @@ Feature: Wines
 
   Scenario: Get red wines
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wines queried with 'q={"type":"red"}'
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -45,6 +57,8 @@ Feature: Wines
 
   Scenario: Get red wines simplified
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wines queried with 'type=red'
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -52,6 +66,8 @@ Feature: Wines
 
   Scenario: Get old red wines
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wines queried with 'q={"type":"red","year":1990}'
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -59,6 +75,8 @@ Feature: Wines
 
   Scenario: Get old red wines simplified
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wines queried with 'type=red&year=1990'
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -66,6 +84,8 @@ Feature: Wines
 
   Scenario: Get wine 1
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wine 1
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -78,6 +98,8 @@ Feature: Wines
 
   Scenario: Get wine 2
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wine 2
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -90,6 +112,8 @@ Feature: Wines
 
   Scenario: Get wine 3
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wine 3
     Then response should have status code 400
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -97,6 +121,8 @@ Feature: Wines
 
   Scenario: Post wine 3
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     And data is reset
     When data has property "id" with value 3
     And data has property "name" with value ""
@@ -111,6 +137,8 @@ Feature: Wines
 
   Scenario: Post wine 3
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     And data is reset
     When data has property "id" with value 3
     And data has property "name" with value "Cabernet sauvignon"
@@ -125,6 +153,8 @@ Feature: Wines
 
   Scenario: Post wine 3
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     And data is reset
     When data has property "id" with value 3
     And data has property "name" with value "Cabernet sauvignon"
@@ -139,6 +169,8 @@ Feature: Wines
 
   Scenario: Post wine 3
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     And data is reset
     When data has property "id" with value 3
     And data has property "name" with value "Cabernet sauvignon"
@@ -151,6 +183,8 @@ Feature: Wines
 
   Scenario: Post wine 3
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     And data is reset
     When data has property "id" with value 3
     And data has property "name" with value "Cabernet sauvignon"
@@ -165,6 +199,8 @@ Feature: Wines
 
   Scenario: Post wine 3
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     And data is reset
     When data has property "id" with value 3
     And data has property "name" with value "Cabernet sauvignon"
@@ -184,6 +220,8 @@ Feature: Wines
 
   Scenario: Get wine 3
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wine 3
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -196,6 +234,8 @@ Feature: Wines
 
   Scenario: Get wine 2
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wine 2
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -208,6 +248,8 @@ Feature: Wines
 
   Scenario: Get wine 1
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wine 1
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -220,6 +262,8 @@ Feature: Wines
 
   Scenario: Put wine 3
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     And data is reset
     When data has property "id" with value 3
     And data has property "name" with value "Cabernet sauvignon"
@@ -239,6 +283,8 @@ Feature: Wines
 
   Scenario: Put wine 3
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     And data is reset
     When data has property "id" with value 3
     And data has property "description" with value "Similar to merlot"
@@ -254,6 +300,8 @@ Feature: Wines
 
   Scenario: Post wine 3 again
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     And data is reset
     When data has property "id" with value 3
     And data has property "name" with value "Cabernet sauvignon"
@@ -268,6 +316,8 @@ Feature: Wines
 
   Scenario: Put wine 4
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     And data is reset
     When data has property "name" with value "Cabernet sauvignon"
     And data has property "year" with value 2013
@@ -281,6 +331,8 @@ Feature: Wines
 
   Scenario: Put wine 4
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     And data is reset
     And data has property "description" with value "Similar to merlot"
     And I put wine 4
@@ -290,6 +342,8 @@ Feature: Wines
 
   Scenario: Get wine 4
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I get wine 4
     Then response should have status code 400
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -297,6 +351,8 @@ Feature: Wines
 
   Scenario: Delete wine 3
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I delete wine 3
     Then response should have status code 200
     And response should have header property "content-type" with value "application/json; charset=utf-8"
@@ -304,6 +360,8 @@ Feature: Wines
 
   Scenario: Delete wine 3
     Given I have started the node app
+    And I have connected to the right database
+    And I have connected to the right application
     When I delete wine 3
     Then response should have status code 400
     And response should have header property "content-type" with value "application/json; charset=utf-8"

@@ -6,6 +6,14 @@ module.exports = function (grunt) {
     "use strict";
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
+        env : {
+            local: {
+                ENV: "src/test/.env"
+            },
+            heroku : {
+                ENV: ".env"
+            }
+        },
         clean: {
             target: [
                 "target/app/*.js",
@@ -61,6 +69,7 @@ module.exports = function (grunt) {
             }
         }
     });
+    grunt.loadNpmTasks("grunt-env");
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks("grunt-toffee");
     grunt.loadNpmTasks("grunt-cucumberjs");
@@ -73,6 +82,11 @@ module.exports = function (grunt) {
         "eslint"
     ]);
     grunt.registerTask("test", [
+        "env:local",
+        "cucumberjs"
+    ]);
+    grunt.registerTask("test_heroku", [
+        "env:heroku",
         "cucumberjs"
     ]);
     grunt.registerTask("default", [

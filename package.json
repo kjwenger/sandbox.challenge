@@ -7,7 +7,8 @@
     "start": "node target/app/app.js",
     "grunt": "grunt",
     "local": "node target/app/app.js src/test/.env",
-    "test": "grunt test"
+    "test": "grunt test",
+    "test_heroku": "grunt test_heroku"
   },
   "repository": {
     "type": "git",
@@ -38,6 +39,7 @@
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-cli": "~0.1.13",
+    "grunt-env": "~0.4.4",
     "grunt-contrib-clean": "~0.7.0",
     "grunt-toffee": "~0.1.1",
     "grunt-cucumberjs": "~0.8.1",

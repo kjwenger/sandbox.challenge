@@ -1,5 +1,7 @@
 debug          = require("debug")("wines-steps")
 dotenv         = require "dotenv"
+envPath        = process.env.ENV or process.argv[2] or "src/test/.env"
+dotenv.config path: envPath
 child_process  = require "child_process"
 mongo          = require("mongodb").MongoClient
 mongoose       = require "mongoose"
@@ -7,8 +9,6 @@ http           = require "http"
 restify        = require "restify"
 wine           = require "../../app/model/wine"
 Wine           = null
-envPath        = "src/test/.env"
-dotenv.config path: envPath
 mongoUrl       = process.env.MONGODB_URL or "mongodb://localhost:27017/test"
 protocol       = process.env.PROTOCOL or "http"
 host           = process.env.HOST or "localhost"
@@ -22,6 +22,13 @@ res            = null
 data           = null
 
 module.exports = () ->
+    sanex = /[^\w\s\/:]/gi
+    sanitize = (string) ->
+        string and string.replace sanex, ""
+    console.log "Testing with environment file #{envPath}"
+    console.log "Testing with environment #{JSON.stringify(process.env)}"
+    console.log "Testing against mongodb at #{mongoUrl}"
+    console.log "Testing against app at #{sanitize(nodeUrl)}"
     this.registerHandler "BeforeFeatures", (event, callback) ->
         debug "BeforeFeatures ... mongoUrl=#{mongoUrl}"
         mongoose.connect! mongoUrl
@@ -48,17 +55,16 @@ module.exports = () ->
         callback()
     this.registerHandler "AfterFeatures", (event, callback) ->
         if client
-            err, req, res, data = client.post! "/shutdown"
-            debug "AfterFeatures ... err=#{err}"
-            debug "AfterFeatures ... data=%j", data
+            if not process.env.APP_STARTED
+                err, req, res, data = client.post! "/shutdown"
+                debug "AfterFeatures ... err=#{err}"
+                debug "AfterFeatures ... data=%j", data
             client.close()
         debug "AfterFeatures ... db=#{db}"
         if db then db.close()
         debug "AfterFeatures ... mongoose.connection=#{mongoose.connection}"
         if mongoose.connection then mongoose.connection.close()
         callback()
-#    this.Before (scenario) -> this
-#    this.After (scenario) -> this
     this.Given /^I have registered all wines$/, (callback) ->
         err, collection = db.collection! "wines"
         debug "I have registered all wines ... err=#{err}"
@@ -141,11 +147,23 @@ module.exports = () ->
         callback()
     this.Given /^I have started the node app$/, (callback) ->
         debug "I have started the node app ... module.exports.node=#{module.exports.node}",
-        if not module.exports.node
+        if not process.env.APP_STARTED and not module.exports.node
             appname = "target/app/app"
             child_process.exec "pkill -9 -f 'node #{appname}'"
             argv = [ appname, envPath ]
             module.exports.node = child_process.spawn "node", argv
+        callback()
+    this.Given /^I have connected to the right database$/, (callback) ->
+#        if mongoose and mongoose.connection and (mongoose.connection.url isnt mongoUrl)
+#            return callback(new Error(
+#                "Expected to have connected to the right application '#{mongoUrl}' but am connected to #{mongoose.connection.url}"))
+        callback()
+    this.Given /^I have connected to the right application$/, (callback) ->
+#        if client and (client.url isnt nodeUrl)
+#            return callback(new Error(
+#                "Expected to have connected to the right application"))
+#            return callback(new Error(
+#                "Expected to have connected to the right application '#{nodeUrl}' but am connected to #{client.url}"))
         callback()
     this.Given /^data is reset$/, (callback) ->
         data = {}
