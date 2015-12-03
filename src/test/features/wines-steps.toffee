@@ -22,7 +22,7 @@ res            = null
 data           = null
 
 module.exports = () ->
-    sanex = /[^\w\s\/:]/gi
+    sanex = /[^\w\s\/:\.]/gi
     sanitize = (string) ->
         string and string.replace sanex, ""
     console.log "Testing with environment file #{envPath}"
