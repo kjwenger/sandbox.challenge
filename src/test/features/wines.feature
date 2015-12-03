@@ -252,6 +252,20 @@ Feature: Wines
     And data should have property "type" with value "red"
     And data should have property "description" with value "Similar to merlot"
 
+  Scenario: Post wine 3 again
+    Given I have started the node app
+    And data is reset
+    When data has property "id" with value 3
+    And data has property "name" with value "Cabernet sauvignon"
+    And data has property "year" with value 2013
+    And data has property "country" with value "France"
+    And data has property "type" with value "red"
+    And data has property "description" with value "The Sean Connery of red wines"
+    And I post wine 3
+    Then response should have status code 500
+    And response should have header property "content-type" with value "application/json; charset=utf-8"
+    And data should be '{"error":"DUPLICATION_ERROR","duplication":{"id":"3"}}'
+
   Scenario: Put wine 4
     Given I have started the node app
     And data is reset
@@ -263,6 +277,7 @@ Feature: Wines
     And I put wine 4
     Then response should have status code 400
     And response should have header property "content-type" with value "application/json; charset=utf-8"
+    And data should be '{"error":"UNKNOWN_OBJECT"}'
 
   Scenario: Put wine 4
     Given I have started the node app
@@ -271,6 +286,7 @@ Feature: Wines
     And I put wine 4
     Then response should have status code 400
     And response should have header property "content-type" with value "application/json; charset=utf-8"
+    And data should be '{"error":"UNKNOWN_OBJECT"}'
 
   Scenario: Get wine 4
     Given I have started the node app
@@ -283,12 +299,12 @@ Feature: Wines
     Given I have started the node app
     When I delete wine 3
     Then response should have status code 200
-    And data should be '{"success":true}'
     And response should have header property "content-type" with value "application/json; charset=utf-8"
+    And data should be '{"success":true}'
 
   Scenario: Delete wine 3
     Given I have started the node app
     When I delete wine 3
     Then response should have status code 400
-    And data should be '{"error":"UNKNOWN_OBJECT"}'
     And response should have header property "content-type" with value "application/json; charset=utf-8"
+    And data should be '{"error":"UNKNOWN_OBJECT"}'

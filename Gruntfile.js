@@ -21,6 +21,7 @@ module.exports = function (grunt) {
             },
             "target/app/app.js": "src/main/toffee/app.toffee",
             "target/app/model/wine.js": "src/main/toffee/model/wine.toffee",
+            "target/app/rest/formatter.js": "src/main/toffee/rest/formatter.toffee",
             "target/app/rest/rest.js": "src/main/toffee/rest/rest.toffee",
             "target/app/rest/rest_wines.js": "src/main/toffee/rest/rest_wines.toffee",
             "target/test/features/wines-steps.js": "src/test/features/wines-steps.toffee"

@@ -27,7 +27,8 @@ module.exports = {
   schema: {
     id: {
       type: Number,
-      required: true
+      required: true,
+      unique: true
     },
     name: {
       type: String,
