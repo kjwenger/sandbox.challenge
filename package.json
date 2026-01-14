@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node src/index.js",
     "test": "mocha --exit --timeout 10000 'test/**/*.test.js'",
+    "test:report": "mocha --exit --timeout 10000 --reporter mochawesome --reporter-options reportDir=reports/test,reportFilename=test-report 'test/**/*.test.js'",
+    "test:coverage": "nyc --reporter=html --reporter=text --report-dir=reports/coverage npm test",
+    "test:all": "nyc --reporter=html --reporter=text --report-dir=reports/coverage mocha --exit --timeout 10000 --reporter mochawesome --reporter-options reportDir=reports/test,reportFilename=test-report 'test/**/*.test.js'",
     "lint": "eslint src test"
   },
   "engines": {
@@ -20,6 +23,13 @@
     "chai": "^4.3.10",
     "eslint": "^8.55.0",
     "mocha": "^10.2.0",
+    "mochawesome": "^7.1.4",
+    "nyc": "^17.1.0",
     "supertest": "^6.3.3"
+  },
+  "nyc": {
+    "include": ["src/**/*.js"],
+    "exclude": ["test/**/*.js"],
+    "all": true
   }
 }
