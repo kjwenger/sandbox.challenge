@@ -79,9 +79,9 @@ npm run lint          # Run ESLint
 
 ## Reports
 
-- [Reports Index](reports/index.html)
-- [Test Report](reports/test/test-report.html)
-- [Coverage Report](reports/coverage/index.html)
+- [Reports Index](https://kjwenger.github.io/sandbox.challenge/) (GitHub Pages)
+- [Test Report](https://kjwenger.github.io/sandbox.challenge/test/test-report.html)
+- [Coverage Report](https://kjwenger.github.io/sandbox.challenge/coverage/)
 
 ## Environment Variables
 

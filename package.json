@@ -6,9 +6,9 @@
   "scripts": {
     "start": "node src/index.js",
     "test": "mocha --exit --timeout 10000 'test/**/*.test.js'",
-    "test:report": "mocha --exit --timeout 10000 --reporter mochawesome --reporter-options reportDir=reports/test,reportFilename=test-report 'test/**/*.test.js'",
-    "test:coverage": "nyc --reporter=html --reporter=text --report-dir=reports/coverage npm test",
-    "test:all": "nyc --reporter=html --reporter=text --report-dir=reports/coverage mocha --exit --timeout 10000 --reporter mochawesome --reporter-options reportDir=reports/test,reportFilename=test-report 'test/**/*.test.js'",
+    "test:report": "mocha --exit --timeout 10000 --reporter mochawesome --reporter-options reportDir=docs/test,reportFilename=test-report 'test/**/*.test.js'",
+    "test:coverage": "nyc --reporter=html --reporter=text --report-dir=docs/coverage npm test",
+    "test:all": "nyc --reporter=html --reporter=text --report-dir=docs/coverage mocha --exit --timeout 10000 --reporter mochawesome --reporter-options reportDir=docs/test,reportFilename=test-report 'test/**/*.test.js'",
     "lint": "eslint src test"
   },
   "engines": {
