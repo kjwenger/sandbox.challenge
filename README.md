@@ -4,6 +4,7 @@
 [![Tests](https://kjwenger.github.io/sandbox.challenge/badges/tests.svg)](https://kjwenger.github.io/sandbox.challenge/test/test-report.html)
 [![Coverage](https://kjwenger.github.io/sandbox.challenge/badges/coverage.svg)](https://kjwenger.github.io/sandbox.challenge/coverage/)
 [![Reports](https://img.shields.io/badge/reports-GitHub%20Pages-blue)](https://kjwenger.github.io/sandbox.challenge/)
+[![Demo](https://img.shields.io/badge/demo-Interactive-e94560)](https://kjwenger.github.io/sandbox.challenge/demo/)
 
 RESTful API for managing wines, built with NodeJS, Restify, and MongoDB.
 
@@ -81,14 +82,16 @@ npm test              # Run tests
 npm run test:report   # Generate HTML test report
 npm run test:coverage # Generate coverage report
 npm run test:all      # Generate both reports
+npm run demo          # Generate interactive demo
 npm run lint          # Run ESLint
 ```
 
-## Reports
+## Documentation
 
-- [Reports Index](https://kjwenger.github.io/sandbox.challenge/) (GitHub Pages)
-- [Test Report](https://kjwenger.github.io/sandbox.challenge/test/test-report.html)
-- [Coverage Report](https://kjwenger.github.io/sandbox.challenge/coverage/)
+- [Interactive Demo](https://kjwenger.github.io/sandbox.challenge/demo/) - Animated API walkthrough for product managers
+- [Swagger UI](http://localhost:3210/api-docs) - Interactive API documentation (when server is running)
+- [Test Report](https://kjwenger.github.io/sandbox.challenge/test/test-report.html) - Detailed test results
+- [Coverage Report](https://kjwenger.github.io/sandbox.challenge/coverage/) - Code coverage analysis
 
 ## Environment Variables
 

@@ -1,5 +1,6 @@
 const restify = require('restify');
-const { registerRoutes } = require('./routes/wines');
+const { registerRoutes: registerWineRoutes } = require('./routes/wines');
+const { registerRoutes: registerDocsRoutes } = require('./routes/docs');
 
 function createServer() {
   const server = restify.createServer({
@@ -9,7 +10,8 @@ function createServer() {
   server.use(restify.plugins.queryParser());
   server.use(restify.plugins.bodyParser());
 
-  registerRoutes(server);
+  registerWineRoutes(server);
+  registerDocsRoutes(server);
 
   return server;
 }

@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wine API - Interactive Demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #e94560, #ff6b6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: #8892b0;
+      font-size: 1.1rem;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, #e94560, #ff6b6b);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #233554;
+      color: #8892b0;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(233, 69, 96, 0.3);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #233554;
+      border-radius: 3px;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #e94560, #ff6b6b);
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .scenario {
+      background: #0f3460;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s ease;
+    }
+
+    .scenario.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .scenario-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .scenario-number {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(90deg, #e94560, #ff6b6b);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .scenario-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .scenario-description {
+      color: #8892b0;
+      margin-bottom: 20px;
+      font-size: 1rem;
+    }
+
+    .exchange {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .exchange {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: #1a1a2e;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 15px 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .request .panel-header {
+      background: #233554;
+      color: #64ffda;
+    }
+
+    .response .panel-header {
+      background: #233554;
+    }
+
+    .response.success .panel-header {
+      color: #64ffda;
+    }
+
+    .response.error .panel-header {
+      color: #ff6b6b;
+    }
+
+    .method {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .method.GET { background: #61affe; color: #fff; }
+    .method.POST { background: #49cc90; color: #fff; }
+    .method.PUT { background: #fca130; color: #fff; }
+    .method.DELETE { background: #f93e3e; color: #fff; }
+
+    .status {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .status.s200 { background: #49cc90; color: #fff; }
+    .status.s400 { background: #f93e3e; color: #fff; }
+
+    .panel-body {
+      padding: 20px;
+      overflow-x: auto;
+    }
+
+    .url {
+      color: #8892b0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.9rem;
+      margin-left: 10px;
+    }
+
+    pre {
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .json-key { color: #ff79c6; }
+    .json-string { color: #f1fa8c; }
+    .json-number { color: #bd93f9; }
+    .json-boolean { color: #ff79c6; }
+    .json-null { color: #6272a4; }
+
+    .typing-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 16px;
+      background: #64ffda;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #8892b0;
+    }
+
+    footer a {
+      color: #64ffda;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Wine API Demo</h1>
+      <p class="subtitle">Interactive walkthrough of API acceptance tests</p>
+    </header>
+
+    <div class="controls">
+      <button class="btn-primary" id="playBtn" onclick="togglePlay()">
+        ▶ Play Demo
+      </button>
+      <button class="btn-secondary" onclick="prevScenario()">◀ Previous</button>
+      <button class="btn-secondary" onclick="nextScenario()">Next ▶</button>
+      <button class="btn-secondary" onclick="resetDemo()">↺ Reset</button>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div id="scenarios"></div>
+
+    <footer>
+      <p>Generated from test scenarios | <a href="https://github.com/kjwenger/sandbox.challenge">GitHub Repository</a></p>
+    </footer>
+  </div>
+
+  <script>
+    const scenarios = [
+  {
+    "title": "List all wines (empty database)",
+    "description": "Initially, the database is empty. GET /wines/ returns an empty array.",
+    "request": {
+      "method": "GET",
+      "url": "/wines/",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "body": null
+    },
+    "response": {
+      "status": 200,
+      "statusText": "OK",
+      "body": []
+    }
+  },
+  {
+    "title": "Create a red wine",
+    "description": "POST /wines/ creates a new wine entry with auto-generated ID.",
+    "request": {
+      "method": "POST",
+      "url": "/wines/",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "name": "Pinot noir",
+        "year": 2011,
+        "country": "France",
+        "type": "red",
+        "description": "Sensual and understated"
+      }
+    },
+    "response": {
+      "status": 200,
+      "statusText": "OK",
+      "body": {
+        "id": 1,
+        "name": "Pinot noir",
+        "year": 2011,
+        "country": "France",
+        "type": "red",
+        "description": "Sensual and understated"
+      }
+    }
+  },
+  {
+    "title": "Create a white wine",
+    "description": "Create another wine - ID auto-increments to 2.",
+    "request": {
+      "method": "POST",
+      "url": "/wines/",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "name": "Chardonnay",
+        "year": 2015,
+        "country": "USA",
+        "type": "white",
+        "description": "Buttery and oaky"
+      }
+    },
+    "response": {
+      "status": 200,
+      "statusText": "OK",
+      "body": {
+        "id": 2,
+        "name": "Chardonnay",
+        "year": 2015,
+        "country": "USA",
+        "type": "white",
+        "description": "Buttery and oaky"
+      }
+    }
+  },
+  {
+    "title": "List all wines",
+    "description": "GET /wines/ now returns both wines.",
+    "request": {
+      "method": "GET",
+      "url": "/wines/",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "body": null
+    },
+    "response": {
+      "status": 200,
+      "statusText": "OK",
+      "body": [
+        {
+          "id": 1,
+          "name": "Pinot noir",
+          "year": 2011,
+          "country": "France",
+          "type": "red",
+          "description": "Sensual and understated"
+        },
+        {
+          "id": 2,
+          "name": "Chardonnay",
+          "year": 2015,
+          "country": "USA",
+          "type": "white",
+          "description": "Buttery and oaky"
+        }
+      ]
+    }
+  },
+  {
+    "title": "Filter wines by type",
+    "description": "GET /wines/?type=red returns only red wines.",
+    "request": {
+      "method": "GET",
+      "url": "/wines/?type=red",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "body": null
+    },
+    "response": {
+      "status": 200,
+      "statusText": "OK",
+      "body": [
+        {
+          "id": 1,
+          "name": "Pinot noir",
+          "year": 2011,
+          "country": "France",
+          "type": "red",
+          "description": "Sensual and understated"
+        }
+      ]
+    }
+  },
+  {
+    "title": "Filter wines by name",
+    "description": "GET /wines/?name=chard returns wines matching \"chard\" (case-insensitive).",
+    "request": {
+      "method": "GET",
+      "url": "/wines/?name=chard",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "body": null
+    },
+    "response": {
+      "status": 200,
+      "statusText": "OK",
+      "body": [
+        {
+          "id": 2,
+          "name": "Chardonnay",
+          "year": 2015,
+          "country": "USA",
+          "type": "white",
+          "description": "Buttery and oaky"
+        }
+      ]
+    }
+  },
+  {
+    "title": "Get wine by ID",
+    "description": "GET /wines/1 retrieves a specific wine.",
+    "request": {
+      "method": "GET",
+      "url": "/wines/1",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "body": null
+    },
+    "response": {
+      "status": 200,
+      "statusText": "OK",
+      "body": {
+        "id": 1,
+        "name": "Pinot noir",
+        "year": 2011,
+        "country": "France",
+        "type": "red",
+        "description": "Sensual and understated"
+      }
+    }
+  },
+  {
+    "title": "Update wine description",
+    "description": "PUT /wines/1 updates the wine description.",
+    "request": {
+      "method": "PUT",
+      "url": "/wines/1",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "description": "Complex and earthy"
+      }
+    },
+    "response": {
+      "status": 200,
+      "statusText": "OK",
+      "body": {
+        "id": 1,
+        "name": "Pinot noir",
+        "year": 2011,
+        "country": "France",
+        "type": "red",
+        "description": "Complex and earthy"
+      }
+    }
+  },
+  {
+    "title": "Validation error - missing fields",
+    "description": "POST /wines/ with missing required fields returns validation errors.",
+    "request": {
+      "method": "POST",
+      "url": "/wines/",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "name": "Incomplete Wine"
+      }
+    },
+    "response": {
+      "status": 400,
+      "statusText": "Bad Request",
+      "body": {
+        "error": "VALIDATION_ERROR",
+        "validation": {
+          "year": "MISSING",
+          "country": "MISSING",
+          "type": "MISSING"
+        }
+      }
+    }
+  },
+  {
+    "title": "Validation error - invalid type",
+    "description": "POST /wines/ with invalid type returns validation error.",
+    "request": {
+      "method": "POST",
+      "url": "/wines/",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "name": "Sparkling",
+        "year": 2020,
+        "country": "Italy",
+        "type": "sparkling"
+      }
+    },
+    "response": {
+      "status": 400,
+      "statusText": "Bad Request",
+      "body": {
+        "error": "VALIDATION_ERROR",
+        "validation": {
+          "type": "INVALID"
+        }
+      }
+    }
+  },
+  {
+    "title": "Delete wine",
+    "description": "DELETE /wines/2 removes the wine.",
+    "request": {
+      "method": "DELETE",
+      "url": "/wines/2",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "body": null
+    },
+    "response": {
+      "status": 200,
+      "statusText": "OK",
+      "body": {
+        "success": true
+      }
+    }
+  },
+  {
+    "title": "Unknown object error",
+    "description": "GET /wines/999 returns error for non-existent ID.",
+    "request": {
+      "method": "GET",
+      "url": "/wines/999",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "body": null
+    },
+    "response": {
+      "status": 400,
+      "statusText": "Bad Request",
+      "body": {
+        "error": "UNKNOWN_OBJECT"
+      }
+    }
+  }
+];
+
+    let currentIndex = -1;
+    let isPlaying = false;
+    let playInterval = null;
+
+    function syntaxHighlight(json) {
+      if (json === null) return '<span class="json-null">null</span>';
+      const str = JSON.stringify(json, null, 2);
+      return str.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (match) => {
+        let cls = 'json-number';
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+            cls = 'json-key';
+            match = match.slice(0, -1) + '</span>:';
+            return '<span class="' + cls + '">' + match;
+          } else {
+            cls = 'json-string';
+          }
+        } else if (/true|false/.test(match)) {
+          cls = 'json-boolean';
+        } else if (/null/.test(match)) {
+          cls = 'json-null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+      });
+    }
+
+    function renderScenario(scenario, index) {
+      const isError = scenario.response.status >= 400;
+      return `
+        <div class="scenario" id="scenario-${index}">
+          <div class="scenario-header">
+            <div class="scenario-number">${index + 1}</div>
+            <div class="scenario-title">${scenario.title}</div>
+          </div>
+          <p class="scenario-description">${scenario.description}</p>
+          <div class="exchange">
+            <div class="panel request">
+              <div class="panel-header">
+                <span class="method ${scenario.request.method}">${scenario.request.method}</span>
+                <span class="url">${scenario.request.url}</span>
+              </div>
+              <div class="panel-body">
+                <pre>${scenario.request.body ? syntaxHighlight(scenario.request.body) : '<span class="json-null">No body</span>'}</pre>
+              </div>
+            </div>
+            <div class="panel response ${isError ? 'error' : 'success'}">
+              <div class="panel-header">
+                <span class="status s${scenario.response.status}">${scenario.response.status} ${scenario.response.statusText}</span>
+                Response
+              </div>
+              <div class="panel-body">
+                <pre>${syntaxHighlight(scenario.response.body)}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function initScenarios() {
+      const container = document.getElementById('scenarios');
+      container.innerHTML = scenarios.map(renderScenario).join('');
+    }
+
+    function showScenario(index) {
+      if (index < 0 || index >= scenarios.length) return;
+
+      currentIndex = index;
+
+      document.querySelectorAll('.scenario').forEach((el, i) => {
+        if (i <= index) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      });
+
+      const progress = ((index + 1) / scenarios.length) * 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+
+      const activeScenario = document.getElementById('scenario-' + index);
+      if (activeScenario) {
+        activeScenario.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function nextScenario() {
+      if (currentIndex < scenarios.length - 1) {
+        showScenario(currentIndex + 1);
+      } else if (isPlaying) {
+        togglePlay();
+      }
+    }
+
+    function prevScenario() {
+      if (currentIndex > 0) {
+        showScenario(currentIndex - 1);
+      }
+    }
+
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      const btn = document.getElementById('playBtn');
+
+      if (isPlaying) {
+        btn.textContent = '⏸ Pause';
+        if (currentIndex >= scenarios.length - 1) {
+          resetDemo();
+        }
+        playInterval = setInterval(() => {
+          nextScenario();
+        }, 3000);
+        nextScenario();
+      } else {
+        btn.textContent = '▶ Play Demo';
+        clearInterval(playInterval);
+      }
+    }
+
+    function resetDemo() {
+      if (isPlaying) {
+        togglePlay();
+      }
+      currentIndex = -1;
+      document.querySelectorAll('.scenario').forEach(el => {
+        el.classList.remove('active');
+      });
+      document.getElementById('progressFill').style.width = '0%';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    initScenarios();
+  </script>
+</body>
+</html>
