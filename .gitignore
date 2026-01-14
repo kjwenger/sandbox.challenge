@@ -3,5 +3,4 @@
 /tmp
 npm-debug.log
 .env
-/reports/
 /.nyc_output/
