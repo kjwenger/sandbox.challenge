@@ -1,5 +1,7 @@
 # Wine API
 
+[![Test Reports](https://img.shields.io/badge/reports-GitHub%20Pages-blue)](https://kjwenger.github.io/sandbox.challenge/)
+
 RESTful API for managing wines, built with NodeJS, Restify, and MongoDB.
 
 ## Quick Start
