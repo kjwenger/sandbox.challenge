@@ -1,0 +1,86 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [claude]
+  pull_request:
+    branches: [claude]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run tests with coverage
+        run: npm run test:all
+        env:
+          MONGODB_URI: mongodb://localhost:27017/wines_test
+
+      - name: Extract coverage percentage
+        id: coverage
+        run: |
+          COVERAGE=$(cat docs/coverage/index.html | grep -oP 'fraction">\K[0-9.]+(?=%)' | head -1)
+          echo "percentage=$COVERAGE" >> $GITHUB_OUTPUT
+          echo "Coverage: $COVERAGE%"
+
+      - name: Create coverage badge
+        run: |
+          COVERAGE=${{ steps.coverage.outputs.percentage }}
+          if (( $(echo "$COVERAGE >= 80" | bc -l) )); then
+            COLOR="brightgreen"
+          elif (( $(echo "$COVERAGE >= 60" | bc -l) )); then
+            COLOR="yellow"
+          else
+            COLOR="red"
+          fi
+          mkdir -p docs/badges
+          curl -s "https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}" > docs/badges/coverage.svg
+
+      - name: Create tests badge
+        run: |
+          TESTS=$(grep -oP '"passes":\K[0-9]+' docs/test/test-report.json || echo "0")
+          FAILURES=$(grep -oP '"failures":\K[0-9]+' docs/test/test-report.json || echo "0")
+          if [ "$FAILURES" -eq "0" ]; then
+            COLOR="brightgreen"
+            TEXT="${TESTS}%20passing"
+          else
+            COLOR="red"
+            TEXT="${FAILURES}%20failing"
+          fi
+          curl -s "https://img.shields.io/badge/tests-${TEXT}-${COLOR}" > docs/badges/tests.svg
+
+      - name: Upload test reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: docs/
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/claude' && github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          destination_dir: ./
+          keep_files: false

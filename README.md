@@ -1,6 +1,9 @@
 # Wine API
 
-[![Test Reports](https://img.shields.io/badge/reports-GitHub%20Pages-blue)](https://kjwenger.github.io/sandbox.challenge/)
+[![CI/CD](https://github.com/kjwenger/sandbox.challenge/actions/workflows/ci.yml/badge.svg?branch=claude)](https://github.com/kjwenger/sandbox.challenge/actions/workflows/ci.yml)
+[![Tests](https://kjwenger.github.io/sandbox.challenge/badges/tests.svg)](https://kjwenger.github.io/sandbox.challenge/test/test-report.html)
+[![Coverage](https://kjwenger.github.io/sandbox.challenge/badges/coverage.svg)](https://kjwenger.github.io/sandbox.challenge/coverage/)
+[![Reports](https://img.shields.io/badge/reports-GitHub%20Pages-blue)](https://kjwenger.github.io/sandbox.challenge/)
 
 RESTful API for managing wines, built with NodeJS, Restify, and MongoDB.
 
