@@ -79,6 +79,7 @@ npm run lint          # Run ESLint
 
 ## Reports
 
+- [Reports Index](reports/index.html)
 - [Test Report](reports/test/test-report.html)
 - [Coverage Report](reports/coverage/index.html)
 
