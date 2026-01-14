@@ -5,6 +5,7 @@
 [![Coverage](https://kjwenger.github.io/sandbox.challenge/badges/coverage.svg)](https://kjwenger.github.io/sandbox.challenge/coverage/)
 [![Reports](https://img.shields.io/badge/reports-GitHub%20Pages-blue)](https://kjwenger.github.io/sandbox.challenge/)
 [![Demo](https://img.shields.io/badge/demo-Interactive-e94560)](https://kjwenger.github.io/sandbox.challenge/demo/)
+[![Swagger](https://img.shields.io/badge/swagger-API%20Docs-49cc90)](https://kjwenger.github.io/sandbox.challenge/api-docs/)
 
 RESTful API for managing wines, built with NodeJS, Restify, and MongoDB.
 
@@ -89,7 +90,7 @@ npm run lint          # Run ESLint
 ## Documentation
 
 - [Interactive Demo](https://kjwenger.github.io/sandbox.challenge/demo/) - Animated API walkthrough for product managers
-- [Swagger UI](http://localhost:3210/api-docs) - Interactive API documentation (when server is running)
+- [Swagger UI](https://kjwenger.github.io/sandbox.challenge/api-docs/) - Interactive API documentation (also at `/api-docs` when server running)
 - [Test Report](https://kjwenger.github.io/sandbox.challenge/test/test-report.html) - Detailed test results
 - [Coverage Report](https://kjwenger.github.io/sandbox.challenge/coverage/) - Code coverage analysis
 
