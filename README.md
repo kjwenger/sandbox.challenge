@@ -7,6 +7,8 @@
 
 RESTful API for managing wines, built with NodeJS, Restify, and MongoDB.
 
+Based on the [Developer Challenge](CHALLENGE.md) specification.
+
 ## Quick Start
 
 ```bash
