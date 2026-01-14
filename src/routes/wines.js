@@ -6,7 +6,7 @@ const {
 } = require('../validators/wineValidator');
 
 function registerRoutes(server) {
-  server.get('/wines/', async (req, res, next) => {
+  server.get('/wines/', async (req, res) => {
     try {
       const filters = {
         year: req.query.year,
@@ -17,68 +17,68 @@ function registerRoutes(server) {
       const wines = await wineService.findAll(filters);
       res.send(200, wines);
     } catch (error) {
-      next(error);
+      res.send(500, { error: error.message });
     }
   });
 
-  server.post('/wines/', async (req, res, next) => {
+  server.post('/wines/', async (req, res) => {
     try {
       const { isValid, errors } = validateWine(req.body);
       if (!isValid) {
         res.send(400, buildValidationError(errors));
-        return next();
+        return;
       }
       const wine = await wineService.create(req.body);
       res.send(200, wine);
     } catch (error) {
-      next(error);
+      res.send(500, { error: error.message });
     }
   });
 
-  server.get('/wines/:id', async (req, res, next) => {
+  server.get('/wines/:id', async (req, res) => {
     try {
       const wine = await wineService.findById(req.params.id);
       if (!wine) {
         res.send(400, buildUnknownObjectError());
-        return next();
+        return;
       }
       res.send(200, wine);
     } catch (error) {
-      next(error);
+      res.send(500, { error: error.message });
     }
   });
 
-  server.put('/wines/:id', async (req, res, next) => {
+  server.put('/wines/:id', async (req, res) => {
     try {
       const existing = await wineService.findById(req.params.id);
       if (!existing) {
         res.send(400, buildUnknownObjectError());
-        return next();
+        return;
       }
 
       const { isValid, errors } = validateWine(req.body, true);
       if (!isValid) {
         res.send(400, buildValidationError(errors));
-        return next();
+        return;
       }
 
       const wine = await wineService.update(req.params.id, req.body);
       res.send(200, wine);
     } catch (error) {
-      next(error);
+      res.send(500, { error: error.message });
     }
   });
 
-  server.del('/wines/:id', async (req, res, next) => {
+  server.del('/wines/:id', async (req, res) => {
     try {
       const deleted = await wineService.remove(req.params.id);
       if (!deleted) {
         res.send(400, buildUnknownObjectError());
-        return next();
+        return;
       }
       res.send(200, { success: true });
     } catch (error) {
-      next(error);
+      res.send(500, { error: error.message });
     }
   });
 }
