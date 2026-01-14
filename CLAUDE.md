@@ -9,9 +9,11 @@ RESTful API for managing wines, implemented in NodeJS with Restify framework and
 ## Build and Run Commands
 
 ```bash
-npm install          # Install dependencies
-npm start            # Start the server
-npm test             # Run tests
+npm install                              # Install dependencies
+npm start                                # Start the server
+npm test                                 # Run all tests
+npm test -- --grep "should create"       # Run single test by name
+npm run lint                             # Run ESLint
 ```
 
 ## API Specification
