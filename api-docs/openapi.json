@@ -1,0 +1,333 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Wine API",
+    "description": "RESTful API for managing wines. Based on the [Developer Challenge](https://github.com/kjwenger/sandbox.challenge/blob/claude/CHALLENGE.md) specification.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Klaus Wenger",
+      "email": "kjwenger@yahoo.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3210",
+      "description": "Local development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Wines",
+      "description": "Wine management operations"
+    }
+  ],
+  "paths": {
+    "/wines/": {
+      "get": {
+        "tags": ["Wines"],
+        "summary": "List all wines",
+        "description": "Returns a list of wine objects stored in the database. Supports optional filtering by year, name, type, and country.",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "description": "Filter by year (exact match)",
+            "schema": { "type": "integer", "example": 2011 }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Filter by name (case-insensitive partial match)",
+            "schema": { "type": "string", "example": "Pinot" }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Filter by wine type",
+            "schema": { "type": "string", "enum": ["red", "white", "rose"], "example": "red" }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "description": "Filter by country (exact match)",
+            "schema": { "type": "string", "example": "France" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of wines",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Wine" }
+                },
+                "example": [
+                  {
+                    "id": 1,
+                    "name": "Pinot noir",
+                    "year": 2011,
+                    "country": "France",
+                    "type": "red",
+                    "description": "Sensual and understated"
+                  },
+                  {
+                    "id": 2,
+                    "name": "Zinfandel",
+                    "year": 1990,
+                    "country": "Croatia",
+                    "type": "red",
+                    "description": "Thick and jammy"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Wines"],
+        "summary": "Create a new wine",
+        "description": "Creates a new wine database entry. Fields name, year, country, and type are mandatory.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WineInput" },
+              "example": {
+                "name": "Cabernet sauvignon",
+                "year": 2013,
+                "country": "France",
+                "type": "red",
+                "description": "The Sean Connery of red wines"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created wine",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Wine" },
+                "example": {
+                  "id": 3,
+                  "name": "Cabernet sauvignon",
+                  "year": 2013,
+                  "country": "France",
+                  "type": "red",
+                  "description": "The Sean Connery of red wines"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationError" },
+                "example": {
+                  "error": "VALIDATION_ERROR",
+                  "validation": {
+                    "country": "MISSING",
+                    "year": "INVALID"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wines/{id}": {
+      "get": {
+        "tags": ["Wines"],
+        "summary": "Get wine by ID",
+        "description": "Retrieves a single wine by its ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Wine ID",
+            "schema": { "type": "integer", "example": 1 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wine found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Wine" },
+                "example": {
+                  "id": 1,
+                  "name": "Pinot noir",
+                  "year": 2011,
+                  "country": "France",
+                  "type": "red",
+                  "description": "Sensual and understated"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Wine not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UnknownObjectError" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Wines"],
+        "summary": "Update wine",
+        "description": "Updates an existing wine by ID. Only provided fields will be updated.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Wine ID",
+            "schema": { "type": "integer", "example": 1 }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WineUpdate" },
+              "example": {
+                "description": "Similar to merlot"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated wine",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Wine" },
+                "example": {
+                  "id": 1,
+                  "name": "Pinot noir",
+                  "year": 2011,
+                  "country": "France",
+                  "type": "red",
+                  "description": "Similar to merlot"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Wine not found or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/UnknownObjectError" },
+                    { "$ref": "#/components/schemas/ValidationError" }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Wines"],
+        "summary": "Delete wine",
+        "description": "Deletes a wine by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Wine ID",
+            "schema": { "type": "integer", "example": 1 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wine deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Wine not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UnknownObjectError" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Wine": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "description": "Unique identifier", "example": 1 },
+          "name": { "type": "string", "description": "Wine name", "example": "Pinot noir" },
+          "year": { "type": "integer", "description": "Vintage year", "example": 2011 },
+          "country": { "type": "string", "description": "Country of origin", "example": "France" },
+          "type": { "type": "string", "enum": ["red", "white", "rose"], "description": "Wine type", "example": "red" },
+          "description": { "type": "string", "description": "Wine description", "example": "Sensual and understated" }
+        },
+        "required": ["id", "name", "year", "country", "type"]
+      },
+      "WineInput": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "Wine name", "example": "Pinot noir" },
+          "year": { "type": "integer", "description": "Vintage year", "example": 2011 },
+          "country": { "type": "string", "description": "Country of origin", "example": "France" },
+          "type": { "type": "string", "enum": ["red", "white", "rose"], "description": "Wine type", "example": "red" },
+          "description": { "type": "string", "description": "Wine description", "example": "Sensual and understated" }
+        },
+        "required": ["name", "year", "country", "type"]
+      },
+      "WineUpdate": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "Wine name" },
+          "year": { "type": "integer", "description": "Vintage year" },
+          "country": { "type": "string", "description": "Country of origin" },
+          "type": { "type": "string", "enum": ["red", "white", "rose"], "description": "Wine type" },
+          "description": { "type": "string", "description": "Wine description" }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string", "enum": ["VALIDATION_ERROR"], "example": "VALIDATION_ERROR" },
+          "validation": {
+            "type": "object",
+            "additionalProperties": { "type": "string", "enum": ["MISSING", "INVALID"] },
+            "example": { "country": "MISSING", "year": "INVALID" }
+          }
+        }
+      },
+      "UnknownObjectError": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string", "enum": ["UNKNOWN_OBJECT"], "example": "UNKNOWN_OBJECT" }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true }
+        }
+      }
+    }
+  }
+}
